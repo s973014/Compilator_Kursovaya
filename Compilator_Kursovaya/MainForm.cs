@@ -169,100 +169,129 @@ namespace Compilator_kursovaya
 
         private void UpdateLineNumbers()
         {
-            int lineCount = richTextBox1.Lines.Length;
-            richTextBox3.Text = "";
-            for (int i = 1; i <= lineCount; i++)
+            try
             {
-                richTextBox3.Text += i + "\n";
+                int lineCount = richTextBox1.Lines.Length;
+                richTextBox3.Text = "";
+                for (int i = 1; i <= lineCount; i++)
+                {
+                    richTextBox3.Text += i + "\n";
+                }
             }
-            
-            
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
         }
 
         private void RichTextBox1_TextChanged(object sender, EventArgs e)
         {
-            UpdateLineNumbers();
 
-            int firstVisibleLine = richTextBox1.GetLineFromCharIndex(richTextBox1.GetCharIndexFromPosition(new Point(0, 0)));
-            richTextBox3.SelectionStart = richTextBox3.GetFirstCharIndexFromLine(firstVisibleLine);
-            richTextBox3.ScrollToCaret();
-
-            int index = tabControl1.SelectedIndex;
-
-            if (change)
+            try
             {
-                change = false;
-                return;
-            }
+                UpdateLineNumbers();
 
-            if (index >= 0)
-            {
-                if (documents[index].saved == true)
+                int firstVisibleLine = richTextBox1.GetLineFromCharIndex(richTextBox1.GetCharIndexFromPosition(new Point(0, 0)));
+                richTextBox3.SelectionStart = richTextBox3.GetFirstCharIndexFromLine(firstVisibleLine);
+                richTextBox3.ScrollToCaret();
+
+                int index = tabControl1.SelectedIndex;
+
+                if (change)
                 {
-                    documents[index].saved = false;
-                    tabControl1.TabPages[tabControl1.SelectedIndex].Text = "* " + documents[tabControl1.SelectedIndex].filename;
+                    change = false;
+                    return;
                 }
 
-            }
-
-
-
-            if (!richTextBox1.Focused) return;
-
-            string newText = richTextBox1.Text;
-            int cursorPos = richTextBox1.SelectionStart;
-
-            if (newText.Length > lastText.Length) // Ввод символа
-            {
-                int diff = newText.Length - lastText.Length;
-                string insertedText = newText.Substring(cursorPos - (newText.Length - lastText.Length), newText.Length - lastText.Length);
-                if (diff == 1)
+                if (index >= 0)
                 {
-                    containtment = insertedText;
-                    isCut = false;
-                    isDelete = false;
-                    isPaste = false;
-                }
-                else
-                {
-                    containtment = insertedText;
-                    isCut = false;
-                    isDelete = false;
-                    isPaste = true;
+                    if (documents[index].saved == true)
+                    {
+                        documents[index].saved = false;
+                        tabControl1.TabPages[tabControl1.SelectedIndex].Text = "* " + documents[tabControl1.SelectedIndex].filename;
+                    }
 
-                    
                 }
             }
-            else if (newText.Length < lastText.Length) // Удаление символа
+            catch (Exception ex) 
             {
-                int diff = lastText.Length - newText.Length;
-                string deletedText = lastText.Substring(cursorPos, diff);
-                if (diff == 1)
-                {
-                    containtment = deletedText;
-                    isCut = false;
-                    isDelete = true;
-                    isPaste = false;
-                    
-                }
-                else
-                {
-                    containtment = null;
-                    isCut = false;
-                    isDelete = false;
-                    isPaste = false;
-                    
-                }
+                MessageBox.Show(ex.Message);
             }
-            lastText = newText;
+
+            try
+            {
+                if (!richTextBox1.Focused) return;
+
+                string newText = richTextBox1.Text;
+                int cursorPos = richTextBox1.SelectionStart;
+
+                if (newText.Length > lastText.Length) // Ввод символа
+                {
+                    int diff = newText.Length - lastText.Length;
+                    string insertedText = newText.Substring(cursorPos - (newText.Length - lastText.Length), newText.Length - lastText.Length);
+                    if (diff == 1)
+                    {
+                        containtment = insertedText;
+                        isCut = false;
+                        isDelete = false;
+                        isPaste = false;
+                    }
+                    else
+                    {
+                        containtment = insertedText;
+                        isCut = false;
+                        isDelete = false;
+                        isPaste = true;
+
+
+                    }
+                }
+                else if (newText.Length < lastText.Length) // Удаление символа
+                {
+                    int diff = lastText.Length - newText.Length;
+                    string deletedText = lastText.Substring(cursorPos, diff);
+                    if (diff == 1)
+                    {
+                        containtment = deletedText;
+                        isCut = false;
+                        isDelete = true;
+                        isPaste = false;
+
+                    }
+                    else
+                    {
+                        containtment = null;
+                        isCut = false;
+                        isDelete = false;
+                        isPaste = false;
+
+                    }
+                }
+                lastText = newText;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
         }
 
         private void RichTextBox1_VScroll(object sender, EventArgs e)
         {
+
+            try
+            {
+                int firstVisibleLine = richTextBox1.GetLineFromCharIndex(richTextBox1.GetCharIndexFromPosition(new Point(0, 0)));
+                richTextBox3.SelectionStart = richTextBox3.GetFirstCharIndexFromLine(firstVisibleLine);
+                richTextBox3.ScrollToCaret();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
             
-            int firstVisibleLine = richTextBox1.GetLineFromCharIndex(richTextBox1.GetCharIndexFromPosition(new Point(0, 0)));
-            richTextBox3.SelectionStart = richTextBox3.GetFirstCharIndexFromLine(firstVisibleLine);
-            richTextBox3.ScrollToCaret();
         }
 
 
@@ -270,22 +299,42 @@ namespace Compilator_kursovaya
 
         private void AddNewTabPage(string filename)
         {
-            TabPage newTab = new TabPage(filename);
-            newTab.Controls.Add(this.splitContainer1);
-            tabControl1.TabPages.Add(newTab);
-            splitContainer1.SplitterDistance = tabControl1.Height / 2;
 
-            tabControl1.SelectedTab = newTab;
+            try
+            {
+                TabPage newTab = new TabPage(filename);
+                newTab.Controls.Add(this.splitContainer1);
+                tabControl1.TabPages.Add(newTab);
+                splitContainer1.SplitterDistance = tabControl1.Height / 2;
+
+                tabControl1.SelectedTab = newTab;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            
         }
 
         private void CreateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Document doc = new Document();
-            doc.filename = "New File";
-            doc.saved = false;
-            doc.savedAs = false;
-            this.documents.Add(doc);
-            AddNewTabPage("* New File");
+
+            try
+            {
+                Document doc = new Document();
+                doc.filename = "New File";
+                doc.saved = false;
+                doc.savedAs = false;
+                this.documents.Add(doc);
+                AddNewTabPage("* New File");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            
 
             /*
             if (saveFileDialog1.ShowDialog() == DialogResult.Cancel)
@@ -303,22 +352,133 @@ namespace Compilator_kursovaya
 
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
-            OpenFile();
+            try
+            {
+                OpenFile();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
         }
 
         private void SaveFile()
         {
 
-            //MessageBox.Show(Convert.ToString(documents.Count));
-            if (documents[tabControl1.SelectedIndex].full_path != "" && documents[tabControl1.SelectedIndex].full_path != null)
+            try
             {
-                System.IO.File.WriteAllText(documents[tabControl1.SelectedIndex].full_path, richTextBox1.Text);
-                //MessageBox.Show("Файл успешно сохранен.");
-                documents[tabControl1.SelectedIndex].saved = true;
-                tabControl1.TabPages[tabControl1.SelectedIndex].Text = documents[tabControl1.SelectedIndex].filename;
+                //MessageBox.Show(Convert.ToString(documents.Count));
+                if (documents[tabControl1.SelectedIndex].full_path != "" && documents[tabControl1.SelectedIndex].full_path != null)
+                {
+                    System.IO.File.WriteAllText(documents[tabControl1.SelectedIndex].full_path, richTextBox1.Text);
+                    //MessageBox.Show("Файл успешно сохранен.");
+                    documents[tabControl1.SelectedIndex].saved = true;
+                    tabControl1.TabPages[tabControl1.SelectedIndex].Text = documents[tabControl1.SelectedIndex].filename;
+                }
+                else
+                {
+                    if (saveFileDialog1.ShowDialog() == DialogResult.Cancel)
+                        return;
+
+                    string filepath = saveFileDialog1.FileName;
+                    string filename = Path.GetFileName(saveFileDialog1.FileName);
+
+                    documents[tabControl1.SelectedIndex].full_path = filepath;
+                    documents[tabControl1.SelectedIndex].filename = filename;
+                    tabControl1.TabPages[tabControl1.SelectedIndex].Text = filename;
+
+
+                    System.IO.File.WriteAllText(filepath, richTextBox1.Text);
+                    //MessageBox.Show("Файл успешно сохранен.");
+                    documents[tabControl1.SelectedIndex].saved = true;
+                    documents[tabControl1.SelectedIndex].savedAs = true;
+
+                }
             }
-            else
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            
+        }
+
+        private void OpenFile()
+        {
+
+            try
+            {
+                if (openFileDialog1.ShowDialog() == DialogResult.Cancel)
+                    return;
+
+                string filename = openFileDialog1.SafeFileName;
+
+                string file_path = openFileDialog1.FileName;
+
+
+                for (int i = 0; i < documents.Count; i++)
+                {
+                    if (documents[i].full_path == file_path)
+                    {
+                        tabControl1.SelectedIndex = i;
+                        return;
+                    }
+                }
+
+
+
+
+                string fileText = System.IO.File.ReadAllText(file_path);
+
+                Document doc = new Document();
+
+                doc.filename = filename;
+                doc.full_path = file_path;
+                doc.rtb1_text = fileText;
+                doc.saved = true;
+                doc.savedAs = true;
+
+                lastText = fileText;
+
+                documents.Add(doc);
+
+                AddNewTabPage(filename);
+
+                UpdateLineNumbers();
+
+
+
+                MessageBox.Show(FileOpened);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            
+        }
+
+
+
+        private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SaveFile();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            
+        }
+
+        private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            try
             {
                 if (saveFileDialog1.ShowDialog() == DialogResult.Cancel)
                     return;
@@ -332,367 +492,235 @@ namespace Compilator_kursovaya
 
 
                 System.IO.File.WriteAllText(filepath, richTextBox1.Text);
-                //MessageBox.Show("Файл успешно сохранен.");
+                MessageBox.Show(FileSaved);
                 documents[tabControl1.SelectedIndex].saved = true;
                 documents[tabControl1.SelectedIndex].savedAs = true;
-
             }
-        }
-
-        private void OpenFile()
-        {
-            if (openFileDialog1.ShowDialog() == DialogResult.Cancel)
-                return;
-
-            string filename = openFileDialog1.SafeFileName;
-
-            string file_path = openFileDialog1.FileName;
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
 
             
-            for(int i = 0; i < documents.Count; i++)
-            {
-                if (documents[i].full_path == file_path)
-                {
-                    tabControl1.SelectedIndex = i;
-                    return;
-                } 
-            }
-
-
-
-
-            string fileText = System.IO.File.ReadAllText(file_path);
-
-            Document doc = new Document();
-
-            doc.filename = filename;
-            doc.full_path = file_path;
-            doc.rtb1_text = fileText;
-            doc.saved = true;
-            doc.savedAs = true;
-
-            lastText = fileText;
-
-            documents.Add(doc);
-
-            AddNewTabPage(filename);
-
-            UpdateLineNumbers();
-
-
-
-            MessageBox.Show(FileOpened);
-        }
-
-
-
-        private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SaveFile();
-        }
-
-        private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (saveFileDialog1.ShowDialog() == DialogResult.Cancel)
-                return;
-
-            string filepath = saveFileDialog1.FileName;
-            string filename = Path.GetFileName(saveFileDialog1.FileName);
-
-            documents[tabControl1.SelectedIndex].full_path = filepath;
-            documents[tabControl1.SelectedIndex].filename = filename;
-            tabControl1.TabPages[tabControl1.SelectedIndex].Text = filename;
-
-
-            System.IO.File.WriteAllText(filepath, richTextBox1.Text);
-            MessageBox.Show(FileSaved);
-            documents[tabControl1.SelectedIndex].saved = true;
-            documents[tabControl1.SelectedIndex].savedAs = true;
 
         }
 
         private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (var file in documents)
+
+            try
             {
-                if (file.saved == false)
+                foreach (var file in documents)
                 {
-                    DialogResult result = MessageBox.Show(
-                        SaveFileStr1 + $" \"{file.filename}\"?",
-                        SaveFileStr2,
-                        MessageBoxButtons.YesNoCancel,
-                        MessageBoxIcon.Question
-                    );
+                    if (file.saved == false)
+                    {
+                        DialogResult result = MessageBox.Show(
+                            SaveFileStr1 + $" \"{file.filename}\"?",
+                            SaveFileStr2,
+                            MessageBoxButtons.YesNoCancel,
+                            MessageBoxIcon.Question
+                        );
 
-                    if (result == DialogResult.Yes)
-                    {
-                        SaveFile();
-                    }
-                    else if (result == DialogResult.No)
-                    {
+                        if (result == DialogResult.Yes)
+                        {
+                            SaveFile();
+                        }
+                        else if (result == DialogResult.No)
+                        {
 
-                    }
-                    else
-                    {
-                        return;
+                        }
+                        else
+                        {
+                            return;
+                        }
                     }
                 }
+
+
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
 
-
-            this.Close();
+            
         }
 
         private void ReturnButton_Click(object sender, EventArgs e)
         {
-            if (richTextBox1.CanUndo)
+
+            try
             {
-                richTextBox1.Undo();
+                if (richTextBox1.CanUndo)
+                {
+                    richTextBox1.Undo();
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            
         }
 
         private void RepeatButton_Click(object sender, EventArgs e)
         {
-            if (isDelete == false)
+
+            try
             {
-                int position = richTextBox1.SelectionStart;
-                if (containtment == null) return;
-                richTextBox1.Text = richTextBox1.Text.Insert(richTextBox1.SelectionStart, containtment);
-                lastText = richTextBox1.Text;
-                richTextBox1.Focus();
-                richTextBox1.SelectionStart = position + containtment.Length;
-            }
-            else
-            {
-                if(richTextBox1.SelectionStart > 0)
+                if (isDelete == false)
                 {
                     int position = richTextBox1.SelectionStart;
-                    richTextBox1.Text = richTextBox1.Text.Remove(position - 1, 1);
+                    if (containtment == null) return;
+                    richTextBox1.Text = richTextBox1.Text.Insert(richTextBox1.SelectionStart, containtment);
                     lastText = richTextBox1.Text;
                     richTextBox1.Focus();
-                    richTextBox1.SelectionStart = position - containtment.Length;
+                    richTextBox1.SelectionStart = position + containtment.Length;
                 }
+                else
+                {
+                    if (richTextBox1.SelectionStart > 0)
+                    {
+                        int position = richTextBox1.SelectionStart;
+                        richTextBox1.Text = richTextBox1.Text.Remove(position - 1, 1);
+                        lastText = richTextBox1.Text;
+                        richTextBox1.Focus();
+                        richTextBox1.SelectionStart = position - containtment.Length;
+                    }
 
 
-                
+
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            
         }
 
         private void CopyButton_Click(object sender, EventArgs e)
         {
-            richTextBox1.Copy();
+            try
+            {
+                richTextBox1.Copy();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
         }
 
         private void CutButton_Click(object sender, EventArgs e)
         {
-            richTextBox1.Cut();
+            try
+            {
+                richTextBox1.Cut();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
         }
 
         private void PasteButton_Click(object sender, EventArgs e)
         {
-            if (Clipboard.ContainsText())
+            try
             {
-                richTextBox1.Paste();
+                if (Clipboard.ContainsText())
+                {
+                    richTextBox1.Paste();
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
         }
 
         private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (richTextBox1.SelectedText.Length > 0)
+            try
             {
-                richTextBox1.SelectedText = "";
+                if (richTextBox1.SelectedText.Length > 0)
+                {
+                    richTextBox1.SelectedText = "";
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
         }
 
         private void SelectAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            richTextBox1.SelectAll();
+            try
+            {
+                richTextBox1.SelectAll();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Document doc = new Document();
+            try
+            {
+                Document doc = new Document();
 
-            doc.rtb1_text = richTextBox1.Text;
-            //doc.rtb2_text = richTextBox2.Text;
-            doc.rtb3_text = richTextBox3.Text;
-
-
-
-            tabControl1.TabPages[tabControl1.SelectedIndex].Controls.Add(this.splitContainer1);
-
-            documents[this.index].rtb1_text = doc.rtb1_text;
-            documents[this.index].rtb2_text = doc.rtb2_text;
-            documents[this.index].rtb3_text = doc.rtb3_text;
+                doc.rtb1_text = richTextBox1.Text;
+                //doc.rtb2_text = richTextBox2.Text;
+                doc.rtb3_text = richTextBox3.Text;
 
 
-            change = true;
-            richTextBox1.Text = documents[tabControl1.SelectedIndex].rtb1_text;
-            //richTextBox2.Text = documents[tabControl1.SelectedIndex].rtb2_text;
-            richTextBox3.Text = documents[tabControl1.SelectedIndex].rtb3_text;
+
+                tabControl1.TabPages[tabControl1.SelectedIndex].Controls.Add(this.splitContainer1);
+
+                documents[this.index].rtb1_text = doc.rtb1_text;
+                documents[this.index].rtb2_text = doc.rtb2_text;
+                documents[this.index].rtb3_text = doc.rtb3_text;
 
 
-            this.index = tabControl1.SelectedIndex;
+                change = true;
+                richTextBox1.Text = documents[tabControl1.SelectedIndex].rtb1_text;
+                lastText = documents[tabControl1.SelectedIndex].rtb1_text;
+                //richTextBox2.Text = documents[tabControl1.SelectedIndex].rtb2_text;
+                richTextBox3.Text = documents[tabControl1.SelectedIndex].rtb3_text;
+
+
+                this.index = tabControl1.SelectedIndex;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
 
         }
 
         private void CloseFile()
         {
-            if (!documents[tabControl1.SelectedIndex].saved)
+            try
             {
-                DialogResult result = MessageBox.Show(
-                        SaveFileStr1 + $" \"{documents[tabControl1.SelectedIndex].filename}\"?",
-                        SaveFileStr2,
-                        MessageBoxButtons.YesNoCancel,
-                        MessageBoxIcon.Question
-                    );
-
-                if (result == DialogResult.Yes)
-                {
-                    SaveFile();
-                }
-                else if (result == DialogResult.No)
-                {
-
-                }
-                else
-                {
-                    return;
-                }
-            }
-
-
-
-            if (tabControl1.TabPages.Count == 1)
-            {
-                documents[0].saved = true;
-                this.Close();
-            }
-            else if (tabControl1.SelectedIndex == 0)
-            {
-                tabControl1.SelectedTab = tabControl1.TabPages[tabControl1.SelectedIndex + 1];
-                tabControl1.TabPages.RemoveAt(index - 1);
-                documents.RemoveAt(index - 1);
-            }
-            else
-            {
-                tabControl1.SelectedTab = tabControl1.TabPages[tabControl1.SelectedIndex - 1];
-                tabControl1.TabPages.RemoveAt(index + 1);
-                documents.RemoveAt(index + 1);
-            }
-
-            this.index = tabControl1.SelectedIndex;
-        }
-
-        private void CloseFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-            CloseFile();
-
-        }
-
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            if (keyData == (Keys.Control | Keys.S))
-            {
-                SaveFile();
-                return true;
-            }
-            else if (keyData == (Keys.Control | Keys.O))
-            {
-                OpenFile();
-                return true;
-            }
-            else if (keyData == (Keys.Control | Keys.N))
-            {
-                Document doc = new Document();
-                doc.filename = "New File";
-                doc.saved = false;
-                doc.savedAs = false;
-                this.documents.Add(doc);
-                AddNewTabPage("* New File");
-            }
-            else if (keyData == (Keys.Control | Keys.W))
-            {
-                CloseFile();
-            }
-            return base.ProcessCmdKey(ref msg, keyData);
-        }
-
-        private void text11_Click(object sender, EventArgs e)
-        {
-            change = true;
-            richTextBox1.Font = new Font("Cascadia Mono", 11F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            //richTextBox2.Font = new Font("Segoe UI", 11F);
-            richTextBox3.Font = new Font("Cascadia Mono", 11F, FontStyle.Regular, GraphicsUnit.Point, 204);
-        }
-
-        private void text12_Click(object sender, EventArgs e)
-        {
-            change = true;
-            richTextBox1.Font = new Font("Cascadia Mono", 12F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            //richTextBox2.Font = new Font("Segoe UI", 12F);
-            richTextBox3.Font = new Font("Cascadia Mono", 12F, FontStyle.Regular, GraphicsUnit.Point, 204);
-        }
-
-        private void text14_Click(object sender, EventArgs e)
-        {
-            change = true;
-            richTextBox1.Font = new Font("Cascadia Mono", 14F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            //richTextBox2.Font = new Font("Segoe UI", 14F);
-            richTextBox3.Font = new Font("Cascadia Mono", 14F, FontStyle.Regular, GraphicsUnit.Point, 204);
-        }
-
-        private void text16_Click(object sender, EventArgs e)
-        {
-            change = true;
-            richTextBox1.Font = new Font("Cascadia Mono", 16F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            //richTextBox2.Font = new Font("Segoe UI", 16F);
-            richTextBox3.Font = new Font("Cascadia Mono", 16F, FontStyle.Regular, GraphicsUnit.Point, 204);
-        }
-
-        private void text18_Click(object sender, EventArgs e)
-        {
-            change = true;
-            richTextBox1.Font = new Font("Cascadia Mono", 18F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            //richTextBox2.Font = new Font("Segoe UI", 18F);
-            richTextBox3.Font = new Font("Cascadia Mono", 18F, FontStyle.Regular, GraphicsUnit.Point, 204);
-        }
-
-        private void text20_Click(object sender, EventArgs e)
-        {
-            change = true;
-            richTextBox1.Font = new Font("Cascadia Mono", 20F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            //richTextBox2.Font = new Font("Segoe UI", 20F);
-            richTextBox3.Font = new Font("Cascadia Mono", 20F, FontStyle.Regular, GraphicsUnit.Point, 204);
-        }
-
-        private void ShowContentsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-
-            byte[] chmBytes = Properties.Resources.Contents;
-
-
-            string tempPath = Path.Combine(Path.GetTempPath(), "Contents.chm");
-            File.WriteAllBytes(tempPath, chmBytes);
-
-
-            Help.ShowHelp(this, tempPath);
-        }
-
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            foreach (var file in documents)
-            {
-                if (file.saved == false)
+                if (!documents[tabControl1.SelectedIndex].saved)
                 {
                     DialogResult result = MessageBox.Show(
-                        SaveFileStr1 + $" \"{file.filename}\"?",
-                        SaveFileStr2,
-                        MessageBoxButtons.YesNoCancel,
-                        MessageBoxIcon.Question
-                    );
+                            SaveFileStr1 + $" \"{documents[tabControl1.SelectedIndex].filename}\"?",
+                            SaveFileStr2,
+                            MessageBoxButtons.YesNoCancel,
+                            MessageBoxIcon.Question
+                        );
 
                     if (result == DialogResult.Yes)
                     {
@@ -704,168 +732,457 @@ namespace Compilator_kursovaya
                     }
                     else
                     {
-                        e.Cancel = true;
                         return;
                     }
                 }
+
+
+
+                if (tabControl1.TabPages.Count == 1)
+                {
+                    documents[0].saved = true;
+                    this.Close();
+                }
+                else if (tabControl1.SelectedIndex == 0)
+                {
+                    tabControl1.SelectedTab = tabControl1.TabPages[tabControl1.SelectedIndex + 1];
+                    tabControl1.TabPages.RemoveAt(index - 1);
+                    documents.RemoveAt(index - 1);
+                }
+                else
+                {
+                    tabControl1.SelectedTab = tabControl1.TabPages[tabControl1.SelectedIndex - 1];
+                    tabControl1.TabPages.RemoveAt(index + 1);
+                    documents.RemoveAt(index + 1);
+                }
+
+                this.index = tabControl1.SelectedIndex;
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
+        }
+
+        private void CloseFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                CloseFile();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            try
+            {
+                if (keyData == (Keys.Control | Keys.S))
+                {
+                    SaveFile();
+                    return true;
+                }
+                else if (keyData == (Keys.Control | Keys.O))
+                {
+                    OpenFile();
+                    return true;
+                }
+                else if (keyData == (Keys.Control | Keys.N))
+                {
+                    Document doc = new Document();
+                    doc.filename = "New File";
+                    doc.saved = false;
+                    doc.savedAs = false;
+                    this.documents.Add(doc);
+                    AddNewTabPage("* New File");
+                }
+                else if (keyData == (Keys.Control | Keys.W))
+                {
+                    CloseFile();
+                }
+                return base.ProcessCmdKey(ref msg, keyData);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return base.ProcessCmdKey(ref msg, keyData);
+            }
+            
+        }
+
+        private void text11_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                change = true;
+                richTextBox1.Font = new Font("Cascadia Mono", 11F, FontStyle.Regular, GraphicsUnit.Point, 204);
+                //richTextBox2.Font = new Font("Segoe UI", 11F);
+                richTextBox3.Font = new Font("Cascadia Mono", 11F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
+        }
+
+        private void text12_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                change = true;
+                richTextBox1.Font = new Font("Cascadia Mono", 12F, FontStyle.Regular, GraphicsUnit.Point, 204);
+                //richTextBox2.Font = new Font("Segoe UI", 12F);
+                richTextBox3.Font = new Font("Cascadia Mono", 12F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
+        }
+
+        private void text14_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                change = true;
+                richTextBox1.Font = new Font("Cascadia Mono", 14F, FontStyle.Regular, GraphicsUnit.Point, 204);
+                //richTextBox2.Font = new Font("Segoe UI", 14F);
+                richTextBox3.Font = new Font("Cascadia Mono", 14F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
+        }
+
+        private void text16_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                change = true;
+                richTextBox1.Font = new Font("Cascadia Mono", 16F, FontStyle.Regular, GraphicsUnit.Point, 204);
+                //richTextBox2.Font = new Font("Segoe UI", 16F);
+                richTextBox3.Font = new Font("Cascadia Mono", 16F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+        }
+
+        private void text18_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                change = true;
+                richTextBox1.Font = new Font("Cascadia Mono", 18F, FontStyle.Regular, GraphicsUnit.Point, 204);
+                //richTextBox2.Font = new Font("Segoe UI", 18F);
+                richTextBox3.Font = new Font("Cascadia Mono", 18F, FontStyle.Regular, GraphicsUnit.Point, 204);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+        }
+
+        private void text20_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                change = true;
+                richTextBox1.Font = new Font("Cascadia Mono", 20F, FontStyle.Regular, GraphicsUnit.Point, 204);
+                //richTextBox2.Font = new Font("Segoe UI", 20F);
+                richTextBox3.Font = new Font("Cascadia Mono", 20F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+        }
+
+        private void ShowContentsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                byte[] chmBytes = Properties.Resources.Contents;
+
+
+                string tempPath = Path.Combine(Path.GetTempPath(), "Contents.chm");
+                File.WriteAllBytes(tempPath, chmBytes);
+
+
+                Help.ShowHelp(this, tempPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+
+            
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            try
+            {
+                foreach (var file in documents)
+                {
+                    if (file.saved == false)
+                    {
+                        DialogResult result = MessageBox.Show(
+                            SaveFileStr1 + $" \"{file.filename}\"?",
+                            SaveFileStr2,
+                            MessageBoxButtons.YesNoCancel,
+                            MessageBoxIcon.Question
+                        );
+
+                        if (result == DialogResult.Yes)
+                        {
+                            SaveFile();
+                        }
+                        else if (result == DialogResult.No)
+                        {
+
+                        }
+                        else
+                        {
+                            e.Cancel = true;
+                            return;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
         }
 
         private void UpdateControlsText(Control control, ResourceManager res)
         {
-
-            toolTip1.SetToolTip(this.CreateFileButton, res.GetString("ToolTip_CreateFileButton"));
-            toolTip1.SetToolTip(this.OpenFileButton, res.GetString("ToolTip_OpenFileButton"));
-            toolTip1.SetToolTip(this.SaveFileButton, res.GetString("ToolTip_SaveFileButton"));
-            toolTip1.SetToolTip(this.ReturnButton, res.GetString("ToolTip_ReturnButton"));
-            toolTip1.SetToolTip(this.RepeatButton, res.GetString("ToolTip_RepeatButton"));
-            toolTip1.SetToolTip(this.CopyButton, res.GetString("ToolTip_CopyButton"));
-            toolTip1.SetToolTip(this.CutButton, res.GetString("ToolTip_CutButton"));
-            toolTip1.SetToolTip(this.PasteButton, res.GetString("ToolTip_PasteButton"));
-            toolTip1.SetToolTip(this.RunButton, res.GetString("ToolTip_RunButton"));
-            toolTip1.SetToolTip(this.AboutButton, res.GetString("ToolTip_AboutButton"));
-            toolTip1.SetToolTip(this.InfoButton, res.GetString("ToolTip_InfoButton"));
-
-            SaveFileStr1 = res.GetString("SaveFileStr1");
-            SaveFileStr2 = res.GetString("SaveFileStr2");
-
-            FileSaved = res.GetString("FileSaved");
-            FileOpened = res.GetString("FileOpened");
-
-            ErrorStr = res.GetString("ErrorStr");
-            FileErrorStr = res.GetString("FileErrorStr");
-
-
-            foreach (var item in this.dataGridView1.Columns)
+            try
             {
-                if (item is DataGridViewTextBoxColumn menuItem)
+                toolTip1.SetToolTip(this.CreateFileButton, res.GetString("ToolTip_CreateFileButton"));
+                toolTip1.SetToolTip(this.OpenFileButton, res.GetString("ToolTip_OpenFileButton"));
+                toolTip1.SetToolTip(this.SaveFileButton, res.GetString("ToolTip_SaveFileButton"));
+                toolTip1.SetToolTip(this.ReturnButton, res.GetString("ToolTip_ReturnButton"));
+                toolTip1.SetToolTip(this.RepeatButton, res.GetString("ToolTip_RepeatButton"));
+                toolTip1.SetToolTip(this.CopyButton, res.GetString("ToolTip_CopyButton"));
+                toolTip1.SetToolTip(this.CutButton, res.GetString("ToolTip_CutButton"));
+                toolTip1.SetToolTip(this.PasteButton, res.GetString("ToolTip_PasteButton"));
+                toolTip1.SetToolTip(this.RunButton, res.GetString("ToolTip_RunButton"));
+                toolTip1.SetToolTip(this.AboutButton, res.GetString("ToolTip_AboutButton"));
+                toolTip1.SetToolTip(this.InfoButton, res.GetString("ToolTip_InfoButton"));
+
+                SaveFileStr1 = res.GetString("SaveFileStr1");
+                SaveFileStr2 = res.GetString("SaveFileStr2");
+
+                FileSaved = res.GetString("FileSaved");
+                FileOpened = res.GetString("FileOpened");
+
+                ErrorStr = res.GetString("ErrorStr");
+                FileErrorStr = res.GetString("FileErrorStr");
+
+
+                foreach (var item in this.dataGridView1.Columns)
                 {
-                    if (!string.IsNullOrEmpty(menuItem.Name))
+                    if (item is DataGridViewTextBoxColumn menuItem)
                     {
-                        string newText = res.GetString(menuItem.Name);
-                        if (!string.IsNullOrEmpty(newText))
-                            menuItem.HeaderText = newText;
+                        if (!string.IsNullOrEmpty(menuItem.Name))
+                        {
+                            string newText = res.GetString(menuItem.Name);
+                            if (!string.IsNullOrEmpty(newText))
+                                menuItem.HeaderText = newText;
+                        }
+                    }
+                }
+
+
+                foreach (var item in this.MainMenuStrip.Items)
+                {
+                    if (item is ToolStripMenuItem menuItem)
+                    {
+                        UpdateMenuItems(menuItem, res);
                     }
                 }
             }
-
-            
-            foreach (var item in this.MainMenuStrip.Items)
+            catch (Exception ex)
             {
-                if (item is ToolStripMenuItem menuItem)
-                {
-                    UpdateMenuItems(menuItem, res);
-                }
+                MessageBox.Show(ex.Message);
             }
+            
         }
 
         private void UpdateMenuItems(ToolStripMenuItem menuItem, ResourceManager res)
         {
-            if (!string.IsNullOrEmpty(menuItem.Name))
+            try
             {
-                string newText = res.GetString(menuItem.Name);
-                if (!string.IsNullOrEmpty(newText))
-                    menuItem.Text = newText;
-            }
-
-           
-            foreach (ToolStripItem subItem in menuItem.DropDownItems)
-            {
-                if (subItem is ToolStripMenuItem subMenuItem)
+                if (!string.IsNullOrEmpty(menuItem.Name))
                 {
-                    UpdateMenuItems(subMenuItem, res);
+                    string newText = res.GetString(menuItem.Name);
+                    if (!string.IsNullOrEmpty(newText))
+                        menuItem.Text = newText;
+                }
+
+
+                foreach (ToolStripItem subItem in menuItem.DropDownItems)
+                {
+                    if (subItem is ToolStripMenuItem subMenuItem)
+                    {
+                        UpdateMenuItems(subMenuItem, res);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
         }
 
 
         private void EnglishToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en");
-            //Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            try
+            {
+                Thread.CurrentThread.CurrentUICulture = new CultureInfo("en");
+                //Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
 
-            ResourceManager res = new ResourceManager("Compilator_Kursovaya.Properties.Resources", typeof(MainForm).Assembly);
-            UpdateControlsText(this, res);
+                ResourceManager res = new ResourceManager("Compilator_Kursovaya.Properties.Resources", typeof(MainForm).Assembly);
+                UpdateControlsText(this, res);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            
 
         }
 
         private void RussanToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo("ru");
-            //Thread.CurrentThread.CurrentCulture = new CultureInfo("ru-RU");
+            try
+            {
+                Thread.CurrentThread.CurrentUICulture = new CultureInfo("ru");
+                //Thread.CurrentThread.CurrentCulture = new CultureInfo("ru-RU");
 
-            ResourceManager res = new ResourceManager("Compilator_Kursovaya.Properties.Resources", typeof(MainForm).Assembly);
-            UpdateControlsText(this, res);
+                ResourceManager res = new ResourceManager("Compilator_Kursovaya.Properties.Resources", typeof(MainForm).Assembly);
+                UpdateControlsText(this, res);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            
         }
 
         private void MainForm_DragEnter(object sender, DragEventArgs e)
         {
 
-
-
-
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            try
             {
-                e.Effect = DragDropEffects.Copy;
+                if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                {
+                    e.Effect = DragDropEffects.Copy;
+                }
+                else
+                {
+                    e.Effect = DragDropEffects.None;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                e.Effect = DragDropEffects.None;
+                MessageBox.Show(ex.Message);
             }
+
+
+            
         }
 
         private void MainForm_DragDrop(object sender, DragEventArgs e)
         {
-            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-
-            foreach (string filePath in files)
+            try
             {
-                if (File.Exists(filePath))
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                foreach (string filePath in files)
                 {
-
-                    string filename = Path.GetFileName(filePath);
-
-                    string file_path = filePath;
-
-
-                    string fileText = System.IO.File.ReadAllText(file_path);
-
-                    Document doc = new Document();
-
-                    doc.filename = filename;
-                    doc.full_path = file_path;
-                    doc.rtb1_text = fileText;
-                    doc.saved = true;
-                    doc.savedAs = true;
-
-                    for (int i = 0; i < documents.Count; i++)
+                    if (File.Exists(filePath))
                     {
-                        if (documents[i].full_path == file_path)
+
+                        string filename = Path.GetFileName(filePath);
+
+                        string file_path = filePath;
+
+
+                        string fileText = System.IO.File.ReadAllText(file_path);
+
+                        Document doc = new Document();
+
+                        doc.filename = filename;
+                        doc.full_path = file_path;
+                        doc.rtb1_text = fileText;
+                        doc.saved = true;
+                        doc.savedAs = true;
+
+                        for (int i = 0; i < documents.Count; i++)
                         {
-                            tabControl1.SelectedIndex = i;
-                            return;
+                            if (documents[i].full_path == file_path)
+                            {
+                                tabControl1.SelectedIndex = i;
+                                return;
+                            }
                         }
+
+                        documents.Add(doc);
+
+                        AddNewTabPage(filename);
+
+                        UpdateLineNumbers();
+
                     }
-
-                    documents.Add(doc);
-
-                    AddNewTabPage(filename);
-
-                    UpdateLineNumbers();
-
-                }
-                else
-                {
-                    MessageBox.Show(FileErrorStr, ErrorStr, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    else
+                    {
+                        MessageBox.Show(FileErrorStr, ErrorStr, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
         }
 
         private void AboutButton_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(@"Лабораторная работа 1
+            try
+            {
+                MessageBox.Show(@"Лабораторная работа 1
 Разработка пользовательского интерфейса (GUI) для языкового процессора.
 Демченко Степан Сергеевич АВТ-214", "О программе");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
         }
     }
 }
