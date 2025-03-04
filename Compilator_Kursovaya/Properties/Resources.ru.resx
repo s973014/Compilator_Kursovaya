@@ -275,6 +275,9 @@
     <value>О программе</value>
   </data>
   
+  
+  
+  <!--
   <data name="Path" xml:space="preserve">
     <value>Путь</value>
   </data>
@@ -286,5 +289,21 @@
   </data>
   <data name="Message" xml:space="preserve">
     <value>Сообщение</value>
+  </data>-->
+  
+  <data name="Code" xml:space="preserve">
+    <value>Код</value>
   </data>
+  <data name="Type" xml:space="preserve">
+    <value>Тип лексемы</value>
+  </data>
+  <data name="Lec" xml:space="preserve">
+    <value>Лексема</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Местоположение</value>
+  </data>
+  
+  
+  
 </root>

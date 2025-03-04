@@ -31,6 +31,7 @@
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             menuStrip1 = new MenuStrip();
             toolStripMenuItem1 = new ToolStripMenuItem();
             CreateToolStripMenuItem = new ToolStripMenuItem();
@@ -425,6 +426,7 @@
             RunButton.TabIndex = 0;
             RunButton.TextAlign = ContentAlignment.TopRight;
             RunButton.UseVisualStyleBackColor = true;
+            RunButton.Click += RunButton_Click;
             // 
             // PasteButton
             // 
@@ -584,7 +586,9 @@
             dataGridView1.Location = new Point(0, 3);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.RowHeadersWidth = 62;
-            dataGridView1.Size = new Size(1602, 166);
+            dataGridViewCellStyle2.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            dataGridView1.RowsDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridView1.Size = new Size(1602, 144);
             dataGridView1.TabIndex = 1;
             // 
             // параметрыToolStripMenuItem

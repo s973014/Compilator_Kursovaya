@@ -276,6 +276,7 @@
     <value>About</value>
   </data>
   
+  <!--
   <data name="Path" xml:space="preserve">
     <value>Path</value>
   </data>
@@ -287,6 +288,19 @@
   </data>
   <data name="Message" xml:space="preserve">
     <value>Message</value>
+  </data>-->
+  
+  <data name="Code" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Token type</value>
+  </data>
+  <data name="Lec" xml:space="preserve">
+    <value>Token</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Location</value>
   </data>
   
 </root>

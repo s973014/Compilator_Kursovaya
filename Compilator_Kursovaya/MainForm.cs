@@ -1,4 +1,5 @@
 using Compilator_kursovaya.Properties;
+using Compilator_Kursovaya;
 using System.Globalization;
 using System.Reflection;
 using System.Resources;
@@ -17,6 +18,7 @@ namespace Compilator_kursovaya
 
 
         public List<Document> documents;
+        
 
         public int index = 0;
         private bool change;
@@ -51,7 +53,8 @@ namespace Compilator_kursovaya
             tabControl1.TabPages[tabControl1.SelectedIndex].Text = "* " + doc.filename;
             doc.full_path = "";
             doc.rtb1_text = "";
-            doc.rtb2_text = "";
+            lastText = "";
+            doc.errors = new List<Error>();
             doc.rtb3_text = "";
             doc.saved = true;
             doc.savedAs = false;
@@ -59,17 +62,19 @@ namespace Compilator_kursovaya
             Font commonFont = new Font("Times New Roman", 14);
 
             richTextBox1.Font = commonFont;
-            
+
             richTextBox3.Font = commonFont;
 
 
-            dataGridView1.AllowUserToAddRows = false;   
-            dataGridView1.AllowUserToDeleteRows = false; 
-            dataGridView1.ReadOnly = true;               
-            dataGridView1.RowHeadersVisible = false;     
+            dataGridView1.AllowUserToAddRows = false;
+            dataGridView1.AllowUserToDeleteRows = false;
+            dataGridView1.ReadOnly = true;
+            dataGridView1.RowHeadersVisible = false;
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 
-           
+            
+
+            /*
             dataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
             {
                 
@@ -101,14 +106,50 @@ namespace Compilator_kursovaya
                 HeaderText = "Сообщение",
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
             });
+            */
 
+            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                
+                HeaderText = "",
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells,
+
+            });
+            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                Name = "Code",
+                HeaderText = "Код",
+                Width = 100,
+
+            });
+            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                Name = "Type",
+                HeaderText = "Тип лексемы",
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+
+            });
+            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                Name = "Lec",
+                HeaderText = "Лексема",
+                Width = 150,
+
+            });
+            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                Name = "Location",
+                HeaderText = "Местоположение",
+                Width = 200,
+
+            });
 
             this.AllowDrop = true;
             richTextBox1.AllowDrop = true;
-            
+
             richTextBox1.WordWrap = false;
-            
-            
+
+
 
             CreateFileButton.Click += CreateToolStripMenuItem_Click;
             OpenFileButton.Click += OpenToolStripMenuItem_Click;
@@ -121,18 +162,21 @@ namespace Compilator_kursovaya
             PasteToolStripMenuItem.Click += PasteButton_Click;
             InfoButton.Click += ShowContentsToolStripMenuItem_Click;
 
+            toolStripMenuItem4.Click += RunButton_Click;
 
-            richTextBox3.ReadOnly = true; 
-            richTextBox3.BackColor = richTextBox1.BackColor; 
+
+            richTextBox3.ReadOnly = true;
+            richTextBox3.BackColor = richTextBox1.BackColor;
             richTextBox3.ForeColor = richTextBox1.ForeColor;
             richTextBox3.Font = richTextBox1.Font;
             richTextBox3.WordWrap = false;
-            
+
             richTextBox3.ScrollBars = RichTextBoxScrollBars.None;
 
             documents = new List<Document>();
 
-            
+
+
             richTextBox1.VScroll += RichTextBox1_VScroll;
             richTextBox1.TextChanged += RichTextBox1_TextChanged;
 
@@ -178,7 +222,7 @@ namespace Compilator_kursovaya
                     richTextBox3.Text += i + "\n";
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -191,6 +235,7 @@ namespace Compilator_kursovaya
             try
             {
                 UpdateLineNumbers();
+                HighlighSyntax(richTextBox1);
 
                 int firstVisibleLine = richTextBox1.GetLineFromCharIndex(richTextBox1.GetCharIndexFromPosition(new Point(0, 0)));
                 richTextBox3.SelectionStart = richTextBox3.GetFirstCharIndexFromLine(firstVisibleLine);
@@ -214,7 +259,7 @@ namespace Compilator_kursovaya
 
                 }
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -226,7 +271,8 @@ namespace Compilator_kursovaya
                 string newText = richTextBox1.Text;
                 int cursorPos = richTextBox1.SelectionStart;
 
-                if (newText.Length > lastText.Length) // Ввод символа
+                if (lastText == null) lastText = "";
+                if (newText.Length > lastText.Length) 
                 {
                     int diff = newText.Length - lastText.Length;
                     string insertedText = newText.Substring(cursorPos - (newText.Length - lastText.Length), newText.Length - lastText.Length);
@@ -247,7 +293,7 @@ namespace Compilator_kursovaya
 
                     }
                 }
-                else if (newText.Length < lastText.Length) // Удаление символа
+                else if (newText.Length < lastText.Length)
                 {
                     int diff = lastText.Length - newText.Length;
                     string deletedText = lastText.Substring(cursorPos, diff);
@@ -291,7 +337,7 @@ namespace Compilator_kursovaya
                 MessageBox.Show(ex.Message);
             }
 
-            
+
         }
 
 
@@ -314,8 +360,39 @@ namespace Compilator_kursovaya
                 MessageBox.Show(ex.Message);
             }
 
-            
+
         }
+
+        public static void HighlighSyntax(RichTextBox richTextBox)
+        {
+            
+            int selectionStart = richTextBox.SelectionStart;
+            int selectionLength = richTextBox.SelectionLength;
+
+            
+            richTextBox.SelectAll();
+            richTextBox.SelectionColor = Color.Black;
+
+            
+            string[] keywords = { "const", "integer" };
+            Color keywordColor = Color.Blue;
+
+            
+            foreach (string keyword in keywords)
+            {
+                MatchCollection matches = Regex.Matches(richTextBox.Text, $@"\b{keyword}\b", RegexOptions.IgnoreCase);
+                foreach (Match match in matches)
+                {
+                    richTextBox.Select(match.Index, match.Length);
+                    richTextBox.SelectionColor = keywordColor;
+                }
+            }
+
+            
+            richTextBox.Select(selectionStart, selectionLength);
+            richTextBox.SelectionColor = Color.Black;
+        }
+
 
         private void CreateToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -326,6 +403,7 @@ namespace Compilator_kursovaya
                 doc.filename = "New File";
                 doc.saved = false;
                 doc.savedAs = false;
+                doc.errors = new List<Error>();
                 this.documents.Add(doc);
                 AddNewTabPage("* New File");
             }
@@ -334,7 +412,7 @@ namespace Compilator_kursovaya
                 MessageBox.Show(ex.Message);
             }
 
-            
+
 
             /*
             if (saveFileDialog1.ShowDialog() == DialogResult.Cancel)
@@ -360,7 +438,7 @@ namespace Compilator_kursovaya
             {
                 MessageBox.Show(ex.Message);
             }
-            
+
         }
 
         private void SaveFile()
@@ -401,7 +479,7 @@ namespace Compilator_kursovaya
                 MessageBox.Show(ex.Message);
             }
 
-            
+
         }
 
         private void OpenFile()
@@ -435,6 +513,7 @@ namespace Compilator_kursovaya
 
                 doc.filename = filename;
                 doc.full_path = file_path;
+                doc.errors = new List<Error>();
                 doc.rtb1_text = fileText;
                 doc.saved = true;
                 doc.savedAs = true;
@@ -456,7 +535,7 @@ namespace Compilator_kursovaya
                 MessageBox.Show(ex.Message);
             }
 
-            
+
         }
 
 
@@ -472,7 +551,7 @@ namespace Compilator_kursovaya
                 MessageBox.Show(ex.Message);
             }
 
-            
+
         }
 
         private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -501,7 +580,7 @@ namespace Compilator_kursovaya
                 MessageBox.Show(ex.Message);
             }
 
-            
+
 
         }
 
@@ -544,7 +623,7 @@ namespace Compilator_kursovaya
                 MessageBox.Show(ex.Message);
             }
 
-            
+
         }
 
         private void ReturnButton_Click(object sender, EventArgs e)
@@ -562,7 +641,7 @@ namespace Compilator_kursovaya
                 MessageBox.Show(ex.Message);
             }
 
-            
+
         }
 
         private void RepeatButton_Click(object sender, EventArgs e)
@@ -599,7 +678,7 @@ namespace Compilator_kursovaya
                 MessageBox.Show(ex.Message);
             }
 
-            
+
         }
 
         private void CopyButton_Click(object sender, EventArgs e)
@@ -612,7 +691,7 @@ namespace Compilator_kursovaya
             {
                 MessageBox.Show(ex.Message);
             }
-            
+
         }
 
         private void CutButton_Click(object sender, EventArgs e)
@@ -625,7 +704,7 @@ namespace Compilator_kursovaya
             {
                 MessageBox.Show(ex.Message);
             }
-            
+
         }
 
         private void PasteButton_Click(object sender, EventArgs e)
@@ -641,7 +720,7 @@ namespace Compilator_kursovaya
             {
                 MessageBox.Show(ex.Message);
             }
-            
+
         }
 
         private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -657,7 +736,7 @@ namespace Compilator_kursovaya
             {
                 MessageBox.Show(ex.Message);
             }
-            
+
         }
 
         private void SelectAllToolStripMenuItem_Click(object sender, EventArgs e)
@@ -670,42 +749,79 @@ namespace Compilator_kursovaya
             {
                 MessageBox.Show(ex.Message);
             }
-            
+
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            Document doc = new Document();
+
+            doc.rtb1_text = richTextBox1.Text;
+
+            doc.errors = new List<Error>();
+            //doc.rtb2_text = richTextBox2.Text;
+
+
+            for (int i = 0; i < dataGridView1.Rows.Count; i++)
+            {
+                var row = dataGridView1.Rows[i];
+
+                var error = new Error()
+                {
+                    index = Convert.ToInt32(row.Cells[0].Value),
+                    code = Convert.ToInt32(row.Cells[1].Value), 
+                    token_type = row.Cells[2].Value?.ToString(), 
+                    token = row.Cells[3].Value?.ToString(),    
+                    location = row.Cells[4].Value?.ToString()
+                };
+
+                doc.errors.Add(error);
+            }
+
+
+
+            doc.rtb3_text = richTextBox3.Text;
+
+
+
+            tabControl1.TabPages[tabControl1.SelectedIndex].Controls.Add(this.splitContainer1);
+
+            documents[this.index].rtb1_text = doc.rtb1_text;
+            documents[this.index].errors = doc.errors;
+            //AddErrsToDocs(this.index);
+            documents[this.index].rtb3_text = doc.rtb3_text;
+
+            //MessageBox.Show(Convert.ToString(documents[tabControl1.SelectedIndex].errors.Count));
+
+            change = true;
+            richTextBox1.Text = documents[tabControl1.SelectedIndex].rtb1_text;
+            lastText = documents[tabControl1.SelectedIndex].rtb1_text;
+            //richTextBox2.Text = documents[tabControl1.SelectedIndex].rtb2_text;
+            dataGridView1.Rows.Clear();
+            for (int i = 0; i < documents[tabControl1.SelectedIndex].errors.Count; i++)
+            {
+                dataGridView1.Rows.Add(
+                    documents[tabControl1.SelectedIndex].errors[i].index,
+                    documents[tabControl1.SelectedIndex].errors[i].code,
+                    documents[tabControl1.SelectedIndex].errors[i].token_type,
+                    documents[tabControl1.SelectedIndex].errors[i].token,
+                    documents[tabControl1.SelectedIndex].errors[i].location);
+            }
+
+
+            richTextBox3.Text = documents[tabControl1.SelectedIndex].rtb3_text;
+
+
+            this.index = tabControl1.SelectedIndex;
             try
             {
-                Document doc = new Document();
-
-                doc.rtb1_text = richTextBox1.Text;
-                //doc.rtb2_text = richTextBox2.Text;
-                doc.rtb3_text = richTextBox3.Text;
-
-
-
-                tabControl1.TabPages[tabControl1.SelectedIndex].Controls.Add(this.splitContainer1);
-
-                documents[this.index].rtb1_text = doc.rtb1_text;
-                documents[this.index].rtb2_text = doc.rtb2_text;
-                documents[this.index].rtb3_text = doc.rtb3_text;
-
-
-                change = true;
-                richTextBox1.Text = documents[tabControl1.SelectedIndex].rtb1_text;
-                lastText = documents[tabControl1.SelectedIndex].rtb1_text;
-                //richTextBox2.Text = documents[tabControl1.SelectedIndex].rtb2_text;
-                richTextBox3.Text = documents[tabControl1.SelectedIndex].rtb3_text;
-
-
-                this.index = tabControl1.SelectedIndex;
+                
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
-            
+
 
         }
 
@@ -762,7 +878,7 @@ namespace Compilator_kursovaya
             {
                 MessageBox.Show(ex.Message);
             }
-            
+
         }
 
         private void CloseFileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -798,12 +914,17 @@ namespace Compilator_kursovaya
                     doc.filename = "New File";
                     doc.saved = false;
                     doc.savedAs = false;
+                    doc.errors = new List<Error>();
                     this.documents.Add(doc);
                     AddNewTabPage("* New File");
                 }
                 else if (keyData == (Keys.Control | Keys.W))
                 {
                     CloseFile();
+                }
+                else if (keyData == Keys.F5)
+                {
+                    RunButton_Click(this, EventArgs.Empty);
                 }
                 return base.ProcessCmdKey(ref msg, keyData);
             }
@@ -812,7 +933,7 @@ namespace Compilator_kursovaya
                 MessageBox.Show(ex.Message);
                 return base.ProcessCmdKey(ref msg, keyData);
             }
-            
+
         }
 
         private void text11_Click(object sender, EventArgs e)
@@ -828,7 +949,7 @@ namespace Compilator_kursovaya
             {
                 MessageBox.Show(ex.Message);
             }
-            
+
         }
 
         private void text12_Click(object sender, EventArgs e)
@@ -844,7 +965,7 @@ namespace Compilator_kursovaya
             {
                 MessageBox.Show(ex.Message);
             }
-            
+
         }
 
         private void text14_Click(object sender, EventArgs e)
@@ -860,7 +981,7 @@ namespace Compilator_kursovaya
             {
                 MessageBox.Show(ex.Message);
             }
-            
+
         }
 
         private void text16_Click(object sender, EventArgs e)
@@ -916,14 +1037,9 @@ namespace Compilator_kursovaya
         {
             try
             {
-                byte[] chmBytes = Properties.Resources.Contents;
-
-
-                string tempPath = Path.Combine(Path.GetTempPath(), "Contents.chm");
-                File.WriteAllBytes(tempPath, chmBytes);
-
-
-                Help.ShowHelp(this, tempPath);
+                MessageBox.Show(@"Лабораторная работа 2
+Разработка лексического анализатора (сканера).
+Демченко Степан Сергеевич АВТ-214", "О программе");
             }
             catch (Exception ex)
             {
@@ -931,7 +1047,7 @@ namespace Compilator_kursovaya
             }
 
 
-            
+
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -969,7 +1085,7 @@ namespace Compilator_kursovaya
             {
                 MessageBox.Show(ex.Message);
             }
-            
+
         }
 
         private void UpdateControlsText(Control control, ResourceManager res)
@@ -1024,7 +1140,7 @@ namespace Compilator_kursovaya
             {
                 MessageBox.Show(ex.Message);
             }
-            
+
         }
 
         private void UpdateMenuItems(ToolStripMenuItem menuItem, ResourceManager res)
@@ -1051,7 +1167,7 @@ namespace Compilator_kursovaya
             {
                 MessageBox.Show(ex.Message);
             }
-            
+
         }
 
 
@@ -1070,7 +1186,7 @@ namespace Compilator_kursovaya
                 MessageBox.Show(ex.Message);
             }
 
-            
+
 
         }
 
@@ -1089,7 +1205,7 @@ namespace Compilator_kursovaya
                 MessageBox.Show(ex.Message);
             }
 
-            
+
         }
 
         private void MainForm_DragEnter(object sender, DragEventArgs e)
@@ -1112,7 +1228,7 @@ namespace Compilator_kursovaya
             }
 
 
-            
+
         }
 
         private void MainForm_DragDrop(object sender, DragEventArgs e)
@@ -1138,6 +1254,7 @@ namespace Compilator_kursovaya
                         doc.filename = filename;
                         doc.full_path = file_path;
                         doc.rtb1_text = fileText;
+                        doc.errors = new List<Error>();
                         doc.saved = true;
                         doc.savedAs = true;
 
@@ -1167,22 +1284,74 @@ namespace Compilator_kursovaya
             {
                 MessageBox.Show(ex.Message);
             }
-            
+
         }
 
         private void AboutButton_Click(object sender, EventArgs e)
         {
             try
             {
-                MessageBox.Show(@"Лабораторная работа 1
-Разработка пользовательского интерфейса (GUI) для языкового процессора.
-Демченко Степан Сергеевич АВТ-214", "О программе");
+                byte[] chmBytes = Properties.Resources.Contents;
+
+
+                string tempPath = Path.Combine(Path.GetTempPath(), "Contents.chm");
+                File.WriteAllBytes(tempPath, chmBytes);
+
+
+                Help.ShowHelp(this, tempPath);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
-            
+
+        }
+
+
+
+        private void AddErrsToDocs(int ind)
+        {
+            for (int i = 0; i < dataGridView1.Rows.Count; i++) 
+            {
+                var row = dataGridView1.Rows[i];
+
+                var error = new Error()
+                {
+                    index = i, // Индекс строки
+                    code = Convert.ToInt32(row.Cells[0].Value), 
+                    token_type = row.Cells[1].Value?.ToString(), 
+                    token = row.Cells[2].Value?.ToString(),
+                    location = row.Cells[4].Value?.ToString()
+                };
+
+                documents[ind].errors.Add(error);
+            }
+        }
+
+        private void RunButton_Click(object sender, EventArgs e)
+        {
+            documents[tabControl1.SelectedIndex].errors.Clear();
+            Scaner scaner = new Scaner(richTextBox1.Text, documents[tabControl1.SelectedIndex].errors);
+            scaner.Analyze();
+
+            documents[tabControl1.SelectedIndex].errors = scaner.errors;
+
+            dataGridView1.Rows.Clear();
+
+
+            for(int i = 0; i < documents[tabControl1.SelectedIndex].errors.Count; i++)
+            {
+                dataGridView1.Rows.Add(documents[tabControl1.SelectedIndex].errors[i].index,
+                    documents[tabControl1.SelectedIndex].errors[i].code,
+                    documents[tabControl1.SelectedIndex].errors[i].token_type,
+                    documents[tabControl1.SelectedIndex].errors[i].token,
+                    documents[tabControl1.SelectedIndex].errors[i].location);
+            }
+
+
+            //dataGridView1.Rows.Add(1,2,3,4,5);
+            //AddErrsToDocs(tabControl1.SelectedIndex);
+
         }
     }
 }
