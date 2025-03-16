@@ -35,6 +35,7 @@
 3. **Панель инструментов** – содержит кнопки быстрых команд для удобного управления программой.
 
 ## Грамматика
+```ebnf
 1. <START> -> 'const'<SPACE>
 2. <SPACE> -> '_'<FIRST>
 3. <FIRST> -> StartSymbols<VAR>
@@ -57,6 +58,7 @@ Digit -> '1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'0'
 Z = <START>;
 VT = {a,b,c,...,z,A,B,C,...,Z,_,=,+,-,;,0,1,2,...,9};
 VN = {<START>,<SPACE>,<VAR>,<FIRST>,<VARREM>,<TYPE>,<EQUAL>,<NUMBER>,<UNSIGNEDNUM>,<NUMBERREM>};
+```
 
 ## Грамматика для ПО FLEX&BISON
 ...
