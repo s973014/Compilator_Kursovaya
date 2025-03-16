@@ -36,6 +36,7 @@
 
 ## Грамматика
 ```ebnf
+G[START]:
 1. <START> -> 'const'<SPACE>
 2. <SPACE> -> '_'<FIRST>
 3. <FIRST> -> StartSymbols<VAR>
@@ -60,8 +61,36 @@ VT = {a,b,c,...,z,A,B,C,...,Z,_,=,+,-,;,0,1,2,...,9};
 VN = {<START>,<SPACE>,<VAR>,<FIRST>,<VARREM>,<TYPE>,<EQUAL>,<NUMBER>,<UNSIGNEDNUM>,<NUMBERREM>};
 ```
 
-## Грамматика для ПО FLEX&BISON
-...
+Согласно классификации Хомского грамматика ```ebnf G[START] ``` является автоматной. 
+
+## Примеры допустимых строк
+
+```Pascal
+const n:integer = 12;
+const QWE : integer= 1233;
+const abc :integer=99;
+```
+
+## Диаграмма состояний сканера
+
+![Image alt](https://github.com/s973014/imgs/blob/main/Syntax%20analyzer.png)
+
+## Тестовые примеры
+```Pascal
+const n:integer = 12;
+```
+![Alt-текст](https://github.com/s973014/imgs/blob/main/Example1.PNG)
+  
+```Pascal
+Const Int:integer= 10;
+```
+![Alt-текст](https://github.com/s973014/imgs/blob/main/Example2.PNG)
+  
+```Pascal
+const a:integer = 1;
+const b:integer = 2;
+```
+![Alt-текст](https://github.com/s973014/imgs/blob/main/Example3.PNG)
 
 ## Использование
 1. Откройте или создайте новый текстовый документ.
