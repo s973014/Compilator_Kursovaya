@@ -34,6 +34,64 @@
 2. **Область отображения результатов работы языкового процессора** – отображает ошибки и предупреждения после нажатия кнопки «Пуск». Ввод текста в этой области запрещён.
 3. **Панель инструментов** – содержит кнопки быстрых команд для удобного управления программой.
 
+## Грамматика
+```ebnf
+G[START]:
+1. <START> -> 'const'<SPACE>
+2. <SPACE> -> '_'<FIRST>
+3. <FIRST> -> StartSymbols<VAR>
+4. <VAR> -> Name<VARREM>
+5. <VARREM> -> Name<VARREM>
+6. <VARREM> -> ':'<TYPE>
+7. <TYPE> -> 'integer'<EQUAL>
+8. <EQUAL> -> '='<NUMBER>
+9. <NUMBER> -> '+'<UNSIGNEDNUM>
+10. <NUMBER> -> '-'<UNSIGNEDNUM>
+11. <NUMBER> -> digit <NUMBERREM>
+12. <UNSIGNEDNUM> -> digit <NUMBERREM>
+13. <NUMBERREM> -> digit <NUMBERREM>
+14. <NUMBERREM> -> ';'
+
+StartSymbols -> 'a'|'b'|'c'|...|'z'|'A'|'B'|'C'|...|'Z'|'_'
+Name -> 'a'|'b'|'c'|...|'z'|'A'|'B'|'C'|...|'Z'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'0'|'_'
+Digit -> '1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'0'
+
+Z = <START>;
+VT = {a,b,c,...,z,A,B,C,...,Z,_,=,+,-,;,0,1,2,...,9};
+VN = {<START>,<SPACE>,<VAR>,<FIRST>,<VARREM>,<TYPE>,<EQUAL>,<NUMBER>,<UNSIGNEDNUM>,<NUMBERREM>};
+```
+
+Согласно классификации Хомского грамматика ``` G[START] ``` является автоматной. 
+
+## Примеры допустимых строк
+
+```Pascal
+const n:integer = 12;
+const QWE : integer= 1233;
+const abc :integer=99;
+```
+
+## Диаграмма состояний сканера
+
+![Image alt](https://github.com/s973014/imgs/blob/main/Syntax%20analyzer.png)
+
+## Тестовые примеры
+```Pascal
+const n:integer = 12;
+```
+![Alt-текст](https://github.com/s973014/imgs/blob/main/Example1.PNG)
+  
+```Pascal
+Const Int:integer= 10;
+```
+![Alt-текст](https://github.com/s973014/imgs/blob/main/Example2.PNG)
+  
+```Pascal
+const a:integer = 1;
+const b:integer = 2;
+```
+![Alt-текст](https://github.com/s973014/imgs/blob/main/Example3.PNG)
+
 ## Использование
 1. Откройте или создайте новый текстовый документ.
 2. Введите текст в область редактирования.
