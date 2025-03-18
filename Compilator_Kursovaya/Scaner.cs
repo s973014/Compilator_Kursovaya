@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Compilator_Kursovaya
 {
@@ -21,7 +22,8 @@ namespace Compilator_Kursovaya
 
         public Scaner(string input, List<Error> errors)
         {
-            this.input = input.Trim();
+            this.input = input;
+            //this.input = input.Trim();
             this.errors = errors;
         }
 
@@ -39,11 +41,11 @@ namespace Compilator_Kursovaya
 
                 switch (ch)
                 {
-                    case char c when char.IsLetter(c):
+                    case char c when char.IsLetterOrDigit(c):
                         ProcessIdentifier(startPos);
                         break;
                     case ' ':
-                        AddToken(4, "Разделитель", "_", startPos+" - "+endPos);
+                        //AddToken(4, "Разделитель", "_", startPos+" - "+endPos);
                         NextChar();
                         break;
                     case ':':
@@ -62,9 +64,9 @@ namespace Compilator_Kursovaya
                         AddToken(8, "Плюс", "+", startPos + " - " + endPos);
                         NextChar();
                         break;
-                    case char c when char.IsDigit(c):
+                    /*case char c when char.IsDigit(c):
                         ProcessNumber(startPos);
-                        break;
+                        break;*/
                     case ';':
                         AddToken(10, "Конец оператора", ";", startPos + " - " + endPos);
                         NextChar();
@@ -90,15 +92,79 @@ namespace Compilator_Kursovaya
                 lexeme += CurrentChar;
                 NextChar();
             }
+
             int endPos = startPos + lexeme.Length;
-            if (Keywords.TryGetValue(lexeme, out int code))
+
+            int count = 0;
+            for(int i = 0; i < lexeme.Length; i++)
             {
-                AddToken(code, "Ключевое слово", lexeme, startPos + " - " + endPos);
+                char ch = lexeme[i];
+                if (char.IsDigit(ch))
+                {
+                    count++;
+                }
+
+            }
+            if (count == lexeme.Length)
+            {
+                endPos = startPos + lexeme.Length;
+                AddToken(9, "Целое число", lexeme, startPos + " - " + endPos);
+                return;
             }
             else
             {
-                AddToken(2, "Идентификатор", lexeme, startPos + " - " + endPos);
+
+                if (char.IsDigit(lexeme[0]))
+                {
+                    AddToken(-1, "Ошибка", lexeme, startPos + " - " + endPos);
+                    return;
+                }
+
+                string lex = lexeme.ToUpper();
+
+                bool ru = false;
+                for (int i = 0; i < lex.Length; i++)
+                {
+                    char c = lex[i];
+                    if ((c >= 'А') && (c <= 'Я'))
+                    {
+                        ru = true;
+                        break;
+                    }
+                }
+
+                if (Keywords.TryGetValue(lexeme, out int code))
+                {
+                    AddToken(code, "Ключевое слово", lexeme, startPos + " - " + endPos);
+                    if (endPos != input.Length)
+                    {
+                        if (code == 1 && input[endPos] == ' ')
+                        {
+                            AddToken(4, "Разделитель", "_", endPos + " - " + endPos);
+                        }
+                    }
+
+
+                }
+                else
+                {
+                    if (!ru)
+                    {
+
+                        AddToken(2, "Идентификатор", lexeme, startPos + " - " + endPos);
+                    }
+                    else
+                    {
+                        AddToken(-1, "Ошибка", lexeme, startPos + " - " + endPos);
+                        ru = false;
+                    }
+                }
             }
+
+
+            
+
+
         }
 
         private void ProcessNumber(int startPos)
